@@ -2,6 +2,13 @@ package av.util;
 
 import java.util.ResourceBundle;
 
+/*
+* В данном классе вычитывается информация из database.properties
+* Это делается с помощью класса ResourceBundle. Это стандартный механизм java,
+* который позволяет вычитать файл.properties по его названию, а далее по ключу (как будто из мапки)
+* достать какое-то значение
+* */
+
 public class DatabaseConfiguration {
     private static DatabaseConfiguration instance;
     private ResourceBundle resourceBundle;

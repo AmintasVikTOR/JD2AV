@@ -4,6 +4,11 @@
     <title>Bye bye!</title>
 </head>
 <body>
+USER NAMES:
 ${userNames}
+<br>
+<br>
+DEALER NAMES:
+${dealerNames}
 </body>
 </html>
