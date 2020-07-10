@@ -11,4 +11,6 @@ public interface UserDao {
     /*Update*/
     /*Delete*/
     List<User> findAll();
+
+    List<User> search(String searchParam);
 }

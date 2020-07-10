@@ -12,4 +12,7 @@ public interface DealerDao {
     /*Update*/
     /*Delete*/
     List<Dealer> findAll();
+
+    List<Dealer> search(String searchParam);
+
 }

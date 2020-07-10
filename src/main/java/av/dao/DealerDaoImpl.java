@@ -74,4 +74,42 @@ public class DealerDaoImpl implements DealerDao {
 
         return dealer;
     }
+
+    @Override
+    public List<Dealer> search(String searchParam) {
+        final String findAllQueryForPrepared = "select * from m_auto_dealer where id > ? order by id desc"; //:{имя параметра}    ?
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        List<Dealer> resultList = new ArrayList<>();
+        /*2. DriverManager should get connection*/
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(findAllQueryForPrepared)) {
+
+            preparedStatement.setLong(1, Long.parseLong(searchParam));
+
+            /*4. Execute query*/
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                /*6. Add parsed info into collection*/
+                resultList.add(parseResultSet(resultSet));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return resultList;
+    }
+
 }

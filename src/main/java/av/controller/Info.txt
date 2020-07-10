@@ -1,2 +1,5 @@
 В контроллере выводим данные на экран после того, как их получили из БД и обработали.
 В FrontController мы вызываем нужный метод (прим.findAll) и задаем критерии выбора, как склеивать информацию и т.п.
+
+For testing use, example:
+http://localhost:8080/FrontController?querydealer=4&query=5
