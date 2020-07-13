@@ -1,11 +1,13 @@
 package av.dao;
 
 import av.domain.User;
+import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
@@ -110,5 +112,151 @@ public class UserDaoImpl implements UserDao {
         }
 
         return resultList;
+    }
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        return Optional.ofNullable(findOne(userId));
+    }
+
+    @Override
+    public User findOne(Long userId) {
+        final String findById = "select * from m_users where id = ?";
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        User user = null;
+        ResultSet resultSet = null;
+        /*2. DriverManager should get connection*/
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(findById);
+        ) {
+
+            preparedStatement.setLong(1, userId);
+            /*4. Execute query*/
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                /*6. Add parsed info into collection*/
+                user = parseResultSet(resultSet);
+            } else {
+                throw new ResourceNotFoundException("User with id " + userId + " not found");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException throwables) {
+                System.out.println(throwables.getMessage());
+            }
+        }
+
+        return user;
+    }
+
+    @Override
+    public User save(User user) {
+
+        final String insertQuery = "INSERT INTO m_users (username, surname, birth_date, login, password, created, changed, weight, is_blocked)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+             PreparedStatement lastInsertId = connection.prepareStatement("SELECT currval('m_users_id_seq') as last_insert_id;");
+        ) {
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getSurname());
+            preparedStatement.setDate(3, user.getBirthDate());
+            preparedStatement.setString(4, user.getLogin());
+            preparedStatement.setString(5, user.getPassword());
+            preparedStatement.setTimestamp(6, user.getCreated());
+            preparedStatement.setTimestamp(7, user.getChanged());
+            preparedStatement.setDouble(8, user.getWeight());
+            preparedStatement.setBoolean(9, user.isBlocked());
+
+            preparedStatement.executeUpdate();
+
+            ResultSet set = lastInsertId.executeQuery();
+            set.next();
+            long insertedUserId = set.getInt("last_insert_id");
+            return findOne(insertedUserId);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Some issues in insert operation!", e);
+        }
+    }
+
+    @Override
+    public User update(User user) {
+        final String updateQuery = "update m_users set username = ?, surname = ?, birth_date = ?, login = ?, password = ?, " +
+                "created = ?, changed = ?, weight = ?, is_blocked = ? " +
+                "where id = ?";
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+        ) {
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getSurname());
+            preparedStatement.setDate(3, user.getBirthDate());
+            preparedStatement.setString(4, user.getLogin());
+            preparedStatement.setString(5, user.getPassword());
+            preparedStatement.setTimestamp(6, user.getCreated());
+            preparedStatement.setTimestamp(7, user.getChanged());
+            preparedStatement.setDouble(8, user.getWeight());
+            preparedStatement.setBoolean(9, user.isBlocked());
+
+            preparedStatement.setLong(10, user.getId());
+
+            preparedStatement.executeUpdate();
+
+            return findOne(user.getId());
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Some issues in insert operation!", e);
+        }
+    }
+
+    @Override
+    public int delete(User user) {
+        return 0;
     }
 }

@@ -1,11 +1,13 @@
 package av.dao;
 
 import av.domain.Dealer;
+import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
@@ -110,6 +112,143 @@ public class DealerDaoImpl implements DealerDao {
         }
 
         return resultList;
+    }
+
+    @Override
+    public Optional<Dealer> findById(Long dealerId) {
+        return Optional.ofNullable(findOne(dealerId));
+    }
+
+    @Override
+    public Dealer findOne(Long dealerId) {
+        final String findById = "select * from m_auto_dealer where id = ?";
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        Dealer dealer = null;
+        ResultSet resultSet = null;
+        /*2. DriverManager should get connection*/
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(findById);
+        ) {
+
+            preparedStatement.setLong(1, dealerId);
+            /*4. Execute query*/
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                /*6. Add parsed info into collection*/
+                dealer = parseResultSet(resultSet);
+            } else {
+                throw new ResourceNotFoundException("Dealer with id " + dealerId + " not found");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException throwables) {
+                System.out.println(throwables.getMessage());
+            }
+        }
+
+        return dealer;
+    }
+
+    @Override
+    public Dealer save(Dealer dealer) {
+        final String insertQuery = "INSERT INTO m_auto_dealer (name, address, capacity, created, changed, year_of_foundation)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+             PreparedStatement lastInsertId = connection.prepareStatement("SELECT currval('m_auto_dealer_id_seq') as last_insert_id;");
+        ) {
+            preparedStatement.setString(1, dealer.getDealername());
+            preparedStatement.setString(2, dealer.getAddress());
+            preparedStatement.setLong(3, dealer.getCapacity());
+            preparedStatement.setTimestamp(4, dealer.getCreated());
+            preparedStatement.setTimestamp(5, dealer.getChanged());
+            preparedStatement.setDate(6, dealer.getYear_of_foundation());
+
+            preparedStatement.executeUpdate();
+
+            ResultSet set = lastInsertId.executeQuery();
+            set.next();
+            long insertedDealerId = set.getInt("last_insert_id");
+            return findOne(insertedDealerId);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Some issues in insert operation!", e);
+        }
+    }
+
+    @Override
+    public Dealer update(Dealer dealer) {
+        final String updateQuery = "update m_auto_dealer set name = ?, address = ?, capacity = ? " +
+                "created = ?, changed = ?, year_of_foundation = ? " +
+                "where id = ?";
+
+        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+        String url = config.getProperty(DATABASE_URL);
+        String login = config.getProperty(DATABASE_LOGIN);
+        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+
+        /*1. Load driver*/
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Don't worry:)");
+        }
+
+        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+                /*3. Get statement from connection*/
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+        ) {
+            preparedStatement.setString(1, dealer.getDealername());
+            preparedStatement.setString(2, dealer.getAddress());
+            preparedStatement.setLong(3, dealer.getCapacity());
+            preparedStatement.setTimestamp(4, dealer.getCreated());
+            preparedStatement.setTimestamp(5, dealer.getChanged());
+            preparedStatement.setDate(6, dealer.getYear_of_foundation());
+
+            preparedStatement.executeUpdate();
+
+            return findOne(dealer.getId());
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Some issues in insert operation!", e);
+        }
+    }
+
+    @Override
+    public int delete(Dealer dealer) {
+        return 0;
     }
 
 }

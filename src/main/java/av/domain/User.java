@@ -1,7 +1,8 @@
 package av.domain;
 
 import java.sql.Timestamp;
-import java.util.Date;
+//import java.util.Date;
+import java.sql.Date;
 import java.util.Objects;
 
 public class User {
