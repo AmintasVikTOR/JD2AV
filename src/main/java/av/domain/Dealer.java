@@ -111,6 +111,12 @@ public class Dealer {
     public Dealer() {
     }
 
+    public Dealer(Long id, String dealername, String address) {
+        this.id = id;
+        this.dealername = dealername;
+        this.address = address;
+    }
+
     public Dealer(Long id, String dealername, String address, Long capacity, Timestamp created, Timestamp changed, Date year_of_foundation) {
         this.id = id;
         this.dealername = dealername;
