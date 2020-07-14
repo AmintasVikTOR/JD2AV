@@ -5,6 +5,8 @@ import av.domain.User;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -16,5 +18,9 @@ public class UserService {
 
     public User findOne(Long userId) {
         return userDao.findOne(userId);
+    }
+
+    public List<User> findAll() {
+        return userDao.findAll();
     }
 }
