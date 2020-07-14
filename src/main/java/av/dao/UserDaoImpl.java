@@ -3,7 +3,7 @@ package av.dao;
 import av.domain.User;
 import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
-@Component("userDaoImpl")
+@Repository("userDaoImpl")
 public class UserDaoImpl implements UserDao {
     public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
 
