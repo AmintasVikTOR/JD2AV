@@ -1,7 +1,10 @@
 package av;
 
+import av.dao.CarsDao;
 import av.dao.DealerDao;
 import av.dao.UserDao;
+import av.domain.Cars;
+import av.domain.Dealer;
 import av.domain.User;
 import av.service.UserService;
 import org.springframework.context.ApplicationContext;
@@ -56,11 +59,25 @@ public class SpringDemo {
 //        System.out.println(name2);
 //        System.out.println(dealerService.findOne(Long.parseLong("1")).getDealername());
 
+        System.out.println("======== INFO USER'S ==========");
         UserDao userRepositoryJdbcTemplate = (UserDao) context.getBean("userRepositoryJdbcTemplate");
         for (User user : userRepositoryJdbcTemplate.findAll()) {
             System.out.println(user);
         }
 
+    System.out.println("======== INFO DEALER ==========");
+
+        DealerDao dealerRepositoryJdbcTemplate = (DealerDao) context.getBean("dealerRepositoryJdbcTemplate");
+        for (Dealer dealer : dealerRepositoryJdbcTemplate.findAll()) {
+            System.out.println(dealer);
+        }
+
+        System.out.println("======== INFO CARS ==========");
+
+        CarsDao carRepositoryJdbcTemplate = (CarsDao) context.getBean("carsRepositoryJdbcTemplate");
+        for (Cars cars : carRepositoryJdbcTemplate.findAll()) {
+            System.out.println(cars);
+        }
     }
 
 
