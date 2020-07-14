@@ -4,6 +4,7 @@ import av.dao.UserDao;
 import av.domain.User;
 import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -15,6 +16,8 @@ import java.util.Optional;
 @Repository("userRepositoryJdbc")
 public class UserDaoImpl implements UserDao {
     //public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
+
+    private static final Logger log = Logger.getLogger(UserDaoImpl.class);
 
     public static final String USER_ID = "id";
     public static final String USER_USERNAME = "username";
@@ -57,12 +60,17 @@ public class UserDaoImpl implements UserDao {
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findAllQuery)) {
 
+            log.debug("Getting connection - USER");
+            log.debug("Prepared statement creation - USER");
             /*4. Execute query*/
             ResultSet resultSet = preparedStatement.executeQuery();
+            log.debug("Executing query - USER");
             while (resultSet.next()) {
+                log.debug("Parsing result set - USER");
                 /*6. Add parsed info into collection*/
                 resultList.add(parseResultSet(resultSet));
             }
+            log.debug("Successfully parsed result set - USER");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

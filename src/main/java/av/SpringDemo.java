@@ -7,10 +7,12 @@ import av.domain.Cars;
 import av.domain.Dealer;
 import av.domain.User;
 import av.service.UserService;
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class SpringDemo {
+    private static final Logger log = Logger.getLogger(SpringDemo.class);
     public static void main(String[] args) {
 
         /*Use application-context.xml*/
@@ -60,9 +62,11 @@ public class SpringDemo {
 //        System.out.println(dealerService.findOne(Long.parseLong("1")).getDealername());
 
         System.out.println("======== INFO USER'S ==========");
-        UserDao userRepositoryJdbcTemplate = (UserDao) context.getBean("userRepositoryJdbcTemplate");
+        //UserDao userRepositoryJdbcTemplate = (UserDao) context.getBean("userRepositoryJdbcTemplate");
+        UserDao userRepositoryJdbcTemplate = (UserDao) context.getBean("userRepositoryJdbc");
         for (User user : userRepositoryJdbcTemplate.findAll()) {
-            System.out.println(user);
+            log.info(user.getLogin());
+            //System.out.println(user);
         }
 
     System.out.println("======== INFO DEALER ==========");
