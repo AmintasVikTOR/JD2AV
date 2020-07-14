@@ -40,15 +40,16 @@ public class SpringDemo {
 
         UserDao userDaoImplByClassName = context.getBean(UserDao.class);
         DealerDao dealerDaoImplByClassName=context.getBean(DealerDao.class);
+
         UserService userService = context.getBean(UserService.class);
         DealerService dealerService=context.getBean(DealerService.class);
 
         //7. Call method as usual
-        String login = userDaoImpl.findOne(Long.parseLong("1")).getLogin();
-        String login2 = userDaoImplByClassName.findOne(Long.parseLong("1")).getLogin();
+        String login = userDaoImpl.findOne(Long.parseLong("2")).getLogin();
+        String login2 = userDaoImplByClassName.findOne(Long.parseLong("2")).getLogin();
         System.out.println(login);
         System.out.println(login2);
-        System.out.println(userService.findOne(Long.parseLong("1")).getLogin());
+        System.out.println(userService.findOne(Long.parseLong("2")).getLogin());
 
         String name = dealerDaoImpl.findOne(Long.parseLong("1")).getDealername();
         String name2 = dealerDaoImplByClassName.findOne(Long.parseLong("1")).getDealername();

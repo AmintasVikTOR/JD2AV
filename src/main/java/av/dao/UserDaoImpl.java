@@ -5,6 +5,7 @@ import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +13,9 @@ import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
-@Repository("userDaoImpl")
+@Repository
 public class UserDaoImpl implements UserDao {
-    public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
+    //public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
 
     public static final String USER_ID = "id";
     public static final String USER_USERNAME = "username";
@@ -27,25 +28,33 @@ public class UserDaoImpl implements UserDao {
     public static final String USER_IS_BLOCKED = "is_blocked";
     public static final String USER_WEIGHT = "weight";
 
+    private DataSource dataSource;
+
+    public UserDaoImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public List<User> findAll() {
         final String findAllQuery = "select * from m_users order by id desc";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
         List<User> resultList = new ArrayList<>();
         /*2. DriverManager should get connection*/
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (  Connection connection = dataSource.getConnection();
+
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findAllQuery)) {
 
@@ -83,21 +92,22 @@ public class UserDaoImpl implements UserDao {
     public List<User> search(String searchParam) {
         final String findAllQueryForPrepared = "select * from m_users where id > ? order by id desc"; //:{имя параметра}    ?
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
         List<User> resultList = new ArrayList<>();
         /*2. DriverManager should get connection*/
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findAllQueryForPrepared)) {
 
@@ -125,22 +135,23 @@ public class UserDaoImpl implements UserDao {
     public User findOne(Long userId) {
         final String findById = "select * from m_users where id = ?";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
         User user = null;
         ResultSet resultSet = null;
         /*2. DriverManager should get connection*/
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findById);
         ) {
@@ -175,19 +186,20 @@ public class UserDaoImpl implements UserDao {
         final String insertQuery = "INSERT INTO m_users (username, surname, birth_date, login, password, created, changed, weight, is_blocked)\n" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
              PreparedStatement lastInsertId = connection.prepareStatement("SELECT currval('m_users_id_seq') as last_insert_id;");
@@ -220,19 +232,20 @@ public class UserDaoImpl implements UserDao {
                 "created = ?, changed = ?, weight = ?, is_blocked = ? " +
                 "where id = ?";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
         ) {

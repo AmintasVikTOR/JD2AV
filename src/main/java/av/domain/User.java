@@ -26,6 +26,8 @@ public class User {
 
     private Float weight;
 
+    private Role role;
+
     public User() {
     }
 
@@ -115,6 +117,31 @@ public class User {
         this.weight = weight;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", surname='" + surname + '\'' +
+                ", birthDate=" + birthDate +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", created=" + created +
+                ", changed=" + changed +
+                ", isBlocked=" + isBlocked +
+                ", weight=" + weight +
+                ", role=" + role +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -129,27 +156,12 @@ public class User {
                 Objects.equals(password, user.password) &&
                 Objects.equals(created, user.created) &&
                 Objects.equals(changed, user.changed) &&
-                Objects.equals(weight, user.weight);
+                Objects.equals(weight, user.weight) &&
+                Objects.equals(role, user.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, surname, birthDate, login, password, created, changed, isBlocked, weight);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", surname='" + surname + '\'' +
-                ", birthDate=" + birthDate +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                ", created=" + created +
-                ", changed=" + changed +
-                ", is_blocked=" + isBlocked +
-                ", weight=" + weight +
-                '}';
+        return Objects.hash(id, username, surname, birthDate, login, password, created, changed, isBlocked, weight, role);
     }
 }

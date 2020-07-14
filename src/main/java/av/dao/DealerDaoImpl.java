@@ -5,6 +5,7 @@ import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +13,9 @@ import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
-@Repository("dealerDaoImpl")
+@Repository
 public class DealerDaoImpl implements DealerDao {
-    public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
+    //public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
 
     public static final String DEALER_ID = "id";
     public static final String DEALER_NAME = "name";
@@ -24,25 +25,32 @@ public class DealerDaoImpl implements DealerDao {
     public static final String DEALER_CHANGED = "changed";
     public static final String DEALER_YEAR_FOUNDATION = "year_of_foundation";
 
+    private DataSource dataSource;
+
+    public DealerDaoImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public List<Dealer> findAll() {
         final String findAllQuery = "select * from m_auto_dealer order by id desc";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
         List<Dealer> resultList = new ArrayList<>();
         /*2. DriverManager should get connection*/
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findAllQuery)) {
 
@@ -83,21 +91,22 @@ public class DealerDaoImpl implements DealerDao {
     public List<Dealer> search(String searchParam) {
         final String findAllQueryForPrepared = "select * from m_auto_dealer where id > ? order by id desc"; //:{имя параметра}    ?
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
         List<Dealer> resultList = new ArrayList<>();
         /*2. DriverManager should get connection*/
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findAllQueryForPrepared)) {
 
@@ -125,22 +134,23 @@ public class DealerDaoImpl implements DealerDao {
     public Dealer findOne(Long dealerId) {
         final String findById = "select * from m_auto_dealer where id = ?";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
         Dealer dealer = null;
         ResultSet resultSet = null;
         /*2. DriverManager should get connection*/
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findById);
         ) {
@@ -174,19 +184,20 @@ public class DealerDaoImpl implements DealerDao {
         final String insertQuery = "INSERT INTO m_auto_dealer (name, address, capacity, created, changed, year_of_foundation)\n" +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+             try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
              PreparedStatement lastInsertId = connection.prepareStatement("SELECT currval('m_auto_dealer_id_seq') as last_insert_id;");
@@ -216,19 +227,20 @@ public class DealerDaoImpl implements DealerDao {
                 "created = ?, changed = ?, year_of_foundation = ? " +
                 "where id = ?";
 
-        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
-        String url = config.getProperty(DATABASE_URL);
-        String login = config.getProperty(DATABASE_LOGIN);
-        String databasePassword = config.getProperty(DATABASE_PASSWORD);
+//        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
+//        String url = config.getProperty(DATABASE_URL);
+//        String login = config.getProperty(DATABASE_LOGIN);
+//        String databasePassword = config.getProperty(DATABASE_PASSWORD);
 
         /*1. Load driver*/
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Don't worry:)");
-        }
+//        try {
+//            Class.forName(driverName);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Don't worry:)");
+//        }
 
-        try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
         ) {
