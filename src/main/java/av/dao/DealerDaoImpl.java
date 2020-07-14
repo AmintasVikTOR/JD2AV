@@ -3,6 +3,7 @@ package av.dao;
 import av.domain.Dealer;
 import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
+@Component("dealerDaoImpl")
 public class DealerDaoImpl implements DealerDao {
     public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
 

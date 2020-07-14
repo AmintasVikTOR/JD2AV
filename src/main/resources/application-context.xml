@@ -10,16 +10,19 @@
 
     <!--    <import resource="datasource.xml"/>-->
 
-    <bean id="user1" class="av.domain.User">
-        <constructor-arg index="0" value="10" type="java.lang.Long"/>
-        <constructor-arg index="1" value="SpringUserName"/>
-        <constructor-arg index="2" value="SpringUserSurname"/>
-    </bean>
 
-    <bean id="dealer1" class="av.domain.Dealer">
-        <constructor-arg index="0" value="10" type="java.lang.Long"/>
-        <constructor-arg index="1" value="SpringDealerName"/>
-        <constructor-arg index="2" value="SpringDealerAddress"/>
-    </bean>
+    <!--   IT'S Commented because we are use annotation @Component-->
+
+<!--    <bean id="user1" class="av.domain.User">-->
+<!--        <constructor-arg index="0" value="10" type="java.lang.Long"/>-->
+<!--        <constructor-arg index="1" value="SpringUserName"/>-->
+<!--        <constructor-arg index="2" value="SpringUserSurname"/>-->
+<!--    </bean>-->
+
+<!--    <bean id="dealer1" class="av.domain.Dealer">-->
+<!--        <constructor-arg index="0" value="10" type="java.lang.Long"/>-->
+<!--        <constructor-arg index="1" value="SpringDealerName"/>-->
+<!--        <constructor-arg index="2" value="SpringDealerAddress"/>-->
+<!--    </bean>-->
 
 </beans>
