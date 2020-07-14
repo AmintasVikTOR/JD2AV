@@ -2,11 +2,10 @@ package av;
 
 import av.dao.DealerDao;
 import av.dao.UserDao;
-import av.domain.Dealer;
 import av.domain.User;
+import av.service.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SpringDemo {
     public static void main(String[] args) {
@@ -35,27 +34,32 @@ public class SpringDemo {
         ApplicationContext context = new AnnotationConfigApplicationContext("av");
 
         //6. Getting bean by name (possible get bean by class name)
-        UserDao userDaoImpl = (UserDao) context.getBean("userDaoImpl");
-        DealerDao dealerDaoImpl=(DealerDao) context.getBean("dealerDaoImpl");
+//        UserDao userDaoImpl = (UserDao) context.getBean("userDaoImpl");
+//        DealerDao dealerDaoImpl=(DealerDao) context.getBean("dealerDaoImpl");
+//
+//        UserDao userDaoImplByClassName = context.getBean(UserDao.class);
+//        DealerDao dealerDaoImplByClassName=context.getBean(DealerDao.class);
+//
+//        UserService userService = context.getBean(UserService.class);
+//        DealerService dealerService=context.getBean(DealerService.class);
+//
+//        //7. Call method as usual
+//        String login = userDaoImpl.findOne(Long.parseLong("2")).getLogin();
+//        String login2 = userDaoImplByClassName.findOne(Long.parseLong("2")).getLogin();
+//        System.out.println(login);
+//        System.out.println(login2);
+//        System.out.println(userService.findOne(Long.parseLong("2")).getLogin());
+//
+//        String name = dealerDaoImpl.findOne(Long.parseLong("1")).getDealername();
+//        String name2 = dealerDaoImplByClassName.findOne(Long.parseLong("1")).getDealername();
+//        System.out.println(name);
+//        System.out.println(name2);
+//        System.out.println(dealerService.findOne(Long.parseLong("1")).getDealername());
 
-        UserDao userDaoImplByClassName = context.getBean(UserDao.class);
-        DealerDao dealerDaoImplByClassName=context.getBean(DealerDao.class);
-
-        UserService userService = context.getBean(UserService.class);
-        DealerService dealerService=context.getBean(DealerService.class);
-
-        //7. Call method as usual
-        String login = userDaoImpl.findOne(Long.parseLong("2")).getLogin();
-        String login2 = userDaoImplByClassName.findOne(Long.parseLong("2")).getLogin();
-        System.out.println(login);
-        System.out.println(login2);
-        System.out.println(userService.findOne(Long.parseLong("2")).getLogin());
-
-        String name = dealerDaoImpl.findOne(Long.parseLong("1")).getDealername();
-        String name2 = dealerDaoImplByClassName.findOne(Long.parseLong("1")).getDealername();
-        System.out.println(name);
-        System.out.println(name2);
-        System.out.println(dealerService.findOne(Long.parseLong("1")).getDealername());
+        UserDao userRepositoryJdbcTemplate = (UserDao) context.getBean("userRepositoryJdbcTemplate");
+        for (User user : userRepositoryJdbcTemplate.findAll()) {
+            System.out.println(user);
+        }
 
     }
 

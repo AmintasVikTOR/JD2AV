@@ -1,24 +1,10 @@
 package av.controller;
 
-import av.dao.DealerDao;
-import av.dao.DealerDaoImpl;
-import av.dao.UserDao;
-import av.dao.UserDaoImpl;
-import av.domain.Dealer;
-import av.domain.User;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class FrontController extends HttpServlet {
 

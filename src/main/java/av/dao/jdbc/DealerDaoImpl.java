@@ -1,6 +1,7 @@
-package av.dao;
+package av.dao.jdbc;
 
-import av.domain.User;
+import av.dao.DealerDao;
+import av.domain.Dealer;
 import av.exceptions.ResourceNotFoundException;
 import av.util.DatabaseConfiguration;
 import org.springframework.stereotype.Repository;
@@ -13,30 +14,27 @@ import java.util.Optional;
 
 import static av.util.DatabaseConfiguration.*;
 
-@Repository
-public class UserDaoImpl implements UserDao {
+@Repository("dealerRepositoryJdbc")
+public class DealerDaoImpl implements DealerDao {
     //public static DatabaseConfiguration config = DatabaseConfiguration.getInstance();
 
-    public static final String USER_ID = "id";
-    public static final String USER_USERNAME = "username";
-    public static final String USER_SURNAME = "surname";
-    public static final String USER_BIRTH_DATE = "birth_date";
-    public static final String USER_LOGIN = "login";
-    public static final String USER_PASSWORD = "password";
-    public static final String USER_CREATED = "created";
-    public static final String USER_CHANGED = "changed";
-    public static final String USER_IS_BLOCKED = "is_blocked";
-    public static final String USER_WEIGHT = "weight";
+    public static final String DEALER_ID = "id";
+    public static final String DEALER_NAME = "name";
+    public static final String DEALER_ADDRESS = "address";
+    public static final String DEALER_CAPACITY = "capacity";
+    public static final String DEALER_CREATED = "created";
+    public static final String DEALER_CHANGED = "changed";
+    public static final String DEALER_YEAR_FOUNDATION = "year_of_foundation";
 
     private DataSource dataSource;
 
-    public UserDaoImpl(DataSource dataSource) {
+    public DealerDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public List<User> findAll() {
-        final String findAllQuery = "select * from m_users order by id desc";
+    public List<Dealer> findAll() {
+        final String findAllQuery = "select * from m_auto_dealer order by id desc";
 
 //        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
 //        String url = config.getProperty(DATABASE_URL);
@@ -50,11 +48,10 @@ public class UserDaoImpl implements UserDao {
 //            System.out.println("Don't worry:)");
 //        }
 
-        List<User> resultList = new ArrayList<>();
+        List<Dealer> resultList = new ArrayList<>();
         /*2. DriverManager should get connection*/
         //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
-        try (  Connection connection = dataSource.getConnection();
-
+        try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(findAllQuery)) {
 
@@ -71,26 +68,29 @@ public class UserDaoImpl implements UserDao {
         return resultList;
     }
 
-    private User parseResultSet(ResultSet resultSet) throws SQLException {
-        User user = new User();
+    private Dealer parseResultSet(ResultSet resultSet) throws SQLException {
+        Dealer dealer = new Dealer();
         /*5. Columns mapping*/
-        user.setId(resultSet.getLong(USER_ID));
-        user.setUsername(resultSet.getString(USER_USERNAME));
-        user.setSurname(resultSet.getString(USER_SURNAME));
-        user.setBirthDate(resultSet.getDate(USER_BIRTH_DATE));
-        user.setLogin(resultSet.getString(USER_LOGIN));
-        user.setPassword(resultSet.getString(USER_PASSWORD));
-        user.setCreated(resultSet.getTimestamp(USER_CREATED));
-        user.setChanged(resultSet.getTimestamp(USER_CHANGED));
-        user.setBlocked(resultSet.getBoolean(USER_IS_BLOCKED));
-        user.setWeight(resultSet.getFloat(USER_WEIGHT));
+        dealer.setId(resultSet.getLong(DEALER_ID));
 
-        return user;
+        dealer.setAddress(resultSet.getString(DEALER_ADDRESS));
+
+        dealer.setCapacity(resultSet.getLong(DEALER_CAPACITY));
+        dealer.setCreated(resultSet.getTimestamp(DEALER_CREATED));
+        dealer.setChanged(resultSet.getTimestamp(DEALER_CHANGED));
+        //dealer.setYearOfFoundation(resultSet.getDate(DEALER_YEAR_FOUNDATION));
+        dealer.setYear_of_foundation(resultSet.getDate(DEALER_YEAR_FOUNDATION));
+        dealer.setDealername(resultSet.getString(DEALER_NAME));
+
+
+        //dealer.setDealername(resultSet.getString(DEALER_NAME));
+
+        return dealer;
     }
 
     @Override
-    public List<User> search(String searchParam) {
-        final String findAllQueryForPrepared = "select * from m_users where id > ? order by id desc"; //:{имя параметра}    ?
+    public List<Dealer> search(String searchParam) {
+        final String findAllQueryForPrepared = "select * from m_auto_dealer where id > ? order by id desc"; //:{имя параметра}    ?
 
 //        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
 //        String url = config.getProperty(DATABASE_URL);
@@ -104,7 +104,7 @@ public class UserDaoImpl implements UserDao {
 //            System.out.println("Don't worry:)");
 //        }
 
-        List<User> resultList = new ArrayList<>();
+        List<Dealer> resultList = new ArrayList<>();
         /*2. DriverManager should get connection*/
         //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
         try (Connection connection = dataSource.getConnection();
@@ -127,13 +127,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(Long userId) {
-        return Optional.ofNullable(findOne(userId));
+    public Optional<Dealer> findById(Long dealerId) {
+        return Optional.ofNullable(findOne(dealerId));
     }
 
     @Override
-    public User findOne(Long userId) {
-        final String findById = "select * from m_users where id = ?";
+    public Dealer findOne(Long dealerId) {
+        final String findById = "select * from m_auto_dealer where id = ?";
 
 //        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
 //        String url = config.getProperty(DATABASE_URL);
@@ -147,7 +147,7 @@ public class UserDaoImpl implements UserDao {
 //            System.out.println("Don't worry:)");
 //        }
 
-        User user = null;
+        Dealer dealer = null;
         ResultSet resultSet = null;
         /*2. DriverManager should get connection*/
         //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
@@ -156,15 +156,15 @@ public class UserDaoImpl implements UserDao {
              PreparedStatement preparedStatement = connection.prepareStatement(findById);
         ) {
 
-            preparedStatement.setLong(1, userId);
+            preparedStatement.setLong(1, dealerId);
             /*4. Execute query*/
             resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 /*6. Add parsed info into collection*/
-                user = parseResultSet(resultSet);
+                dealer = parseResultSet(resultSet);
             } else {
-                throw new ResourceNotFoundException("User with id " + userId + " not found");
+                throw new ResourceNotFoundException("Dealer with id " + dealerId + " not found");
             }
 
         } catch (SQLException e) {
@@ -177,14 +177,13 @@ public class UserDaoImpl implements UserDao {
             }
         }
 
-        return user;
+        return dealer;
     }
 
     @Override
-    public User save(User user) {
-
-        final String insertQuery = "INSERT INTO m_users (username, surname, birth_date, login, password, created, changed, weight, is_blocked)\n" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public Dealer save(Dealer dealer) {
+        final String insertQuery = "INSERT INTO m_auto_dealer (name, address, capacity, created, changed, year_of_foundation)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
 //        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
 //        String url = config.getProperty(DATABASE_URL);
@@ -199,27 +198,24 @@ public class UserDaoImpl implements UserDao {
 //        }
 
         //try (Connection connection = DriverManager.getConnection(url, login, databasePassword);
-        try (Connection connection = dataSource.getConnection();
+             try (Connection connection = dataSource.getConnection();
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-             PreparedStatement lastInsertId = connection.prepareStatement("SELECT currval('m_users_id_seq') as last_insert_id;");
+             PreparedStatement lastInsertId = connection.prepareStatement("SELECT currval('m_auto_dealer_id_seq') as last_insert_id;");
         ) {
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getSurname());
-            preparedStatement.setDate(3, user.getBirthDate());
-            preparedStatement.setString(4, user.getLogin());
-            preparedStatement.setString(5, user.getPassword());
-            preparedStatement.setTimestamp(6, user.getCreated());
-            preparedStatement.setTimestamp(7, user.getChanged());
-            preparedStatement.setDouble(8, user.getWeight());
-            preparedStatement.setBoolean(9, user.isBlocked());
+            preparedStatement.setString(1, dealer.getDealername());
+            preparedStatement.setString(2, dealer.getAddress());
+            preparedStatement.setLong(3, dealer.getCapacity());
+            preparedStatement.setTimestamp(4, dealer.getCreated());
+            preparedStatement.setTimestamp(5, dealer.getChanged());
+            preparedStatement.setDate(6, dealer.getYear_of_foundation());
 
             preparedStatement.executeUpdate();
 
             ResultSet set = lastInsertId.executeQuery();
             set.next();
-            long insertedUserId = set.getInt("last_insert_id");
-            return findOne(insertedUserId);
+            long insertedDealerId = set.getInt("last_insert_id");
+            return findOne(insertedDealerId);
 
         } catch (SQLException e) {
             throw new RuntimeException("Some issues in insert operation!", e);
@@ -227,9 +223,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User update(User user) {
-        final String updateQuery = "update m_users set username = ?, surname = ?, birth_date = ?, login = ?, password = ?, " +
-                "created = ?, changed = ?, weight = ?, is_blocked = ? " +
+    public Dealer update(Dealer dealer) {
+        final String updateQuery = "update m_auto_dealer set name = ?, address = ?, capacity = ? " +
+                "created = ?, changed = ?, year_of_foundation = ? " +
                 "where id = ?";
 
 //        String driverName = config.getProperty(DATABASE_DRIVER_NAME);
@@ -249,21 +245,16 @@ public class UserDaoImpl implements UserDao {
                 /*3. Get statement from connection*/
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
         ) {
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getSurname());
-            preparedStatement.setDate(3, user.getBirthDate());
-            preparedStatement.setString(4, user.getLogin());
-            preparedStatement.setString(5, user.getPassword());
-            preparedStatement.setTimestamp(6, user.getCreated());
-            preparedStatement.setTimestamp(7, user.getChanged());
-            preparedStatement.setDouble(8, user.getWeight());
-            preparedStatement.setBoolean(9, user.isBlocked());
-
-            preparedStatement.setLong(10, user.getId());
+            preparedStatement.setString(1, dealer.getDealername());
+            preparedStatement.setString(2, dealer.getAddress());
+            preparedStatement.setLong(3, dealer.getCapacity());
+            preparedStatement.setTimestamp(4, dealer.getCreated());
+            preparedStatement.setTimestamp(5, dealer.getChanged());
+            preparedStatement.setDate(6, dealer.getYear_of_foundation());
 
             preparedStatement.executeUpdate();
 
-            return findOne(user.getId());
+            return findOne(dealer.getId());
 
         } catch (SQLException e) {
             throw new RuntimeException("Some issues in insert operation!", e);
@@ -271,7 +262,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public int delete(User user) {
+    public int delete(Dealer dealer) {
         return 0;
     }
+
 }
